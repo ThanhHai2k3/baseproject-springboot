@@ -5,6 +5,9 @@ import com.example.projectbase.entity.User;
 import com.example.projectbase.repository.UserRepository;
 import com.example.projectbase.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users")
     public List<UserDTO> findAll() {
         return userRepository.findAll().stream()
                 .map(this::toDTO)
@@ -33,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "user", key = "#id")
     public UserDTO findById(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
@@ -42,12 +47,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true),
+            @CacheEvict(value = "user", key = "#result.id")
+    })
     public UserDTO create(UserDTO userDTO) {
         User saved = userRepository.save(toEntity(userDTO));
         return toDTO(saved);
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true),
+            @CacheEvict(value = "user", key = "#id")
+    })
     public UserDTO update(Long id, UserDTO userDTO) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
@@ -61,6 +74,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true),
+            @CacheEvict(value = "user", key = "#id")
+    })
     public void delete(Long id) {
         userRepository.deleteById(id);
     }
