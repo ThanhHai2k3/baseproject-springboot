@@ -1,6 +1,6 @@
 package com.example.projectbase.controller;
 
-import com.example.projectbase.entity.User;
+import com.example.projectbase.dto.UserDTO;
 import com.example.projectbase.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,27 +15,27 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers(); // CÓ CACHE
+    public List<UserDTO> getAll() {
+        return userService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public UserDTO getById(@PathVariable Long id) {
+        return userService.findById(id);
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user); // CLEAR CACHE
+    public UserDTO create(@RequestBody UserDTO dto) {
+        return userService.create(dto);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user); // CLEAR CACHE
-    }
-
-    @PatchMapping("/{id}")
-    public User patchUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.patchUser(id, user); // CLEAR CACHE
+    public UserDTO update(@PathVariable Long id, @RequestBody UserDTO dto) {
+        return userService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id); // CLEAR CACHE
+    public void delete(@PathVariable Long id) {
+        userService.delete(id);
     }
 }

@@ -20,7 +20,7 @@ target/
 *.ipr
 
 ### Secrets
-../.env
+.env
 
 ### NetBeans ###
 /nbproject/private/
